@@ -1,0 +1,16 @@
+version: '2'
+services:
+  teamcity-server:
+    image: jetbrains/teamcity-server
+    environment:
+      TEAMCITY_SERVER_OPTS: " -Dteamcity.development.mode=true "
+    ports:
+     - "8111:8111"
+    volumes:
+     - ./data/server:/data/teamcity_server/datadir
+  teamcity-agent:
+    image: jetbrains/teamcity-agent
+    environment:
+      SERVER_URL: http://192.168.1.69:8111
+    volumes:
+     - ./data/agent:/data/teamcity_agent/conf
