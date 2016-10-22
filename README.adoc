@@ -4,23 +4,23 @@ revisions plugin
 
 Plugin provides extra properties to be used in build configuration i.e. for build number generation.
 
-It provides variables:
+It provides properties:
 
 * revisions.<id>.revision - Value of revision, for Git it is SHA hash
 * revisions.<id>.short - Short hash for Git, otherwise N/A
 
 Where <id> is id of your VCS defined in TeamCity.
 
-Additionally for simplification there are variables
+Additionally for simplification there are properties
 
 * revisions.revision
 * revisions.short
 
-It refers to the first revision, if you have only one VCS root, it should be enough for you.
+Both refers to the first revision, if you have only one VCS root, it should be sufficient to use for you.
 
 = Installation
 
 Grab latest version of plugin from link
-image:https://api.bintray.com/packages/pwielgolaski/generic/teamcity-oauth/images/download.svg[link="https://bintray.com/pwielgolaski/generic/teamcity-oauth/_latestVersion"]
+image:https://api.bintray.com/packages/pwielgolaski/generic/teamcity-revisions/images/download.svg[link="https://bintray.com/pwielgolaski/generic/teamcity-revisions/_latestVersion"]
 
 and install it to Teamcity following https://confluence.jetbrains.com/display/TCD10/Installing+Additional+Plugins[https://confluence.jetbrains.com/display/TCD10/Installing+Additional+Plugins]
