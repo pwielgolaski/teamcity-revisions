@@ -26,7 +26,7 @@ public class RevisionsParametersProvider extends AbstractBuildParametersProvider
             Map.Entry<VcsRootInstance, BuildRevision> revision = revisions.entrySet().iterator().next();
             processRevision(revision.getKey(), revision.getValue(), result, false);
         }
-        LOG.warn(result);
+        LOG.debug(result);
         return result;
     }
 
