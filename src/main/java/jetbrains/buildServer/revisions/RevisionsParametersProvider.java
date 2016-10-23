@@ -2,38 +2,54 @@ package jetbrains.buildServer.revisions;
 
 import jetbrains.buildServer.serverSide.BuildRevision;
 import jetbrains.buildServer.serverSide.SBuild;
+import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.parameters.AbstractBuildParametersProvider;
 import jetbrains.buildServer.vcs.VcsRootInstance;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class RevisionsParametersProvider extends AbstractBuildParametersProvider {
     private static final Logger LOG = Logger.getLogger(RevisionsParametersProvider.class);
-    public static final String PREFIX = "revisions";
+    public static final String PREFIX = "build.revisions.";
 
     @NotNull
     @Override
     public Map<String, String> getParameters(@NotNull SBuild build, boolean emulationMode) {
-        List<BuildRevision> revisions = build.getRevisions();
-        if (revisions == null) return Collections.emptyMap();
-
+        Map<VcsRootInstance, BuildRevision> revisions = getRevisions(build, emulationMode);
         Map<String, String> result = new HashMap<>();
-        revisions.forEach(r -> processRevision(r, result, true));
+        revisions.forEach((root, revision) -> processRevision(root, revision, result, true));
         if (!revisions.isEmpty()) {
-            processRevision(revisions.get(0), result, false);
+            Map.Entry<VcsRootInstance, BuildRevision> revision = revisions.entrySet().iterator().next();
+            processRevision(revision.getKey(), revision.getValue(), result, false);
         }
+        LOG.warn(result);
         return result;
     }
 
-    private void processRevision(BuildRevision revision, Map<String, String> result, boolean includeId) {
-        String prefix = PREFIX + "." + (includeId ? revision.getRoot().getName() + "." : "");
-        result.put(prefix + "revision", revision.getRevision());
-        result.put(prefix + "short", isGitRepo(revision.getRoot()) ? revision.getRevision().substring(0, 7) : "N/A");
+    private Map<VcsRootInstance, BuildRevision> getRevisions(@NotNull SBuild build, boolean emulationMode) {
+        final Map<VcsRootInstance, BuildRevision> revisions = new LinkedHashMap<>();
+        if (emulationMode) {
+            SBuildType buildType = build.getBuildType();
+            if (buildType == null) return revisions;
+
+            for (VcsRootInstance rootInstance : buildType.getVcsRootInstances()) {
+                revisions.put(rootInstance, null);
+            }
+        } else if (build.getRevisions() != null) {
+            build.getRevisions().forEach(r -> revisions.put(r.getRoot(), r));
+        }
+        return revisions;
+    }
+
+    private void processRevision(VcsRootInstance root, BuildRevision revision, Map<String, String> result, boolean includeId) {
+        String prefix = PREFIX + (includeId ? root.getName() + "." : "");
+        String revisionText = revision != null ? revision.getRevision() : "???";
+        result.put(prefix + "revision", revisionText);
+        result.put(prefix + "short", isGitRepo(root) ? revisionText.substring(0, Math.min(revisionText.length(), 7)) : "N/A");
     }
 
     private boolean isGitRepo(VcsRootInstance root) {

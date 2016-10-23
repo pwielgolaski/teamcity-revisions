@@ -6,15 +6,15 @@ Plugin provides extra properties to be used in build configuration i.e. for buil
 
 It provides properties:
 
-* revisions.<id>.revision - Value of revision, for Git it is SHA hash
-* revisions.<id>.short - Short hash for Git, otherwise N/A
+* build.revisions.<id>.revision - Value of revision, for Git it is SHA hash
+* build.revisions.<id>.short - Short hash for Git, otherwise N/A
 
 Where <id> is id of your VCS defined in TeamCity.
 
 Additionally for simplification there are properties
 
-* revisions.revision
-* revisions.short
+* build.revisions.revision
+* build.revisions.short
 
 Both refers to the first revision, if you have only one VCS root, it should be sufficient to use for you.
 
