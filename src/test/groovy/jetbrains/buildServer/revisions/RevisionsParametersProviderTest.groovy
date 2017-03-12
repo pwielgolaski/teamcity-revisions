@@ -4,6 +4,7 @@ import jetbrains.buildServer.serverSide.BuildRevision
 import jetbrains.buildServer.serverSide.SBuild
 import jetbrains.buildServer.serverSide.SBuildType
 import jetbrains.buildServer.vcs.VcsRootInstance
+import jetbrains.buildServer.vcs.VcsRootInstanceEntry
 import spock.lang.Specification
 
 
@@ -75,9 +76,11 @@ class RevisionsParametersProviderTest extends Specification {
 
     def "should handle short revision when run in emulation mode"() {
         given:
+        VcsRootInstance rootInstnace = buildRootInstance('jetbrains.git', 'myid');
         SBuild build = Mock(SBuild) {
             getBuildType() >> Mock(SBuildType) {
-                getVcsRootInstances() >> [buildRootInstance('jetbrains.git', 'myid')]
+                getVcsRootInstanceEntries() >> [ Mock(VcsRootInstanceEntry) { getVcsRoot() >> rootInstnace}]
+                getVcsRootInstances() >> [rootInstnace]
             }
         }
         when:

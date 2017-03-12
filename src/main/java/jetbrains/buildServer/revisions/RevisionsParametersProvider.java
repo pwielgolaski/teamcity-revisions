@@ -3,8 +3,10 @@ package jetbrains.buildServer.revisions;
 import jetbrains.buildServer.serverSide.BuildRevision;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.impl.DummyBuildType;
 import jetbrains.buildServer.serverSide.parameters.AbstractBuildParametersProvider;
 import jetbrains.buildServer.vcs.VcsRootInstance;
+import jetbrains.buildServer.vcs.VcsRootInstanceEntry;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,6 +37,12 @@ public class RevisionsParametersProvider extends AbstractBuildParametersProvider
         if (emulationMode) {
             SBuildType buildType = build.getBuildType();
             if (buildType == null) return revisions;
+
+            for (VcsRootInstanceEntry rootInstanceEntry : buildType.getVcsRootInstanceEntries()) {
+                revisions.put(rootInstanceEntry.getVcsRoot(), null);
+            }
+
+            if ((buildType instanceof DummyBuildType)) return revisions;
 
             for (VcsRootInstance rootInstance : buildType.getVcsRootInstances()) {
                 revisions.put(rootInstance, null);
